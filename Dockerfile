@@ -5,7 +5,8 @@ RUN apt install -y openjdk-8-jre python less curl openssh-server openssh-client
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # Setup Hadoop
-RUN curl -s http://apache.mirrors.ionfish.org/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz | tar -xz -C /root
+#RUN curl  http://apache.mirrors.ionfish.org/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz | tar -xz -C /root
+RUN curl https://archive.apache.org/dist/hadoop/core/hadoop-2.9.2/hadoop-2.9.2.tar.gz | tar -xz -C /root
 RUN mkdir /root/hadoop-2.9.2/dfs
 COPY hadoop/hadoop-env.sh /root/hadoop-2.9.2/etc/hadoop/hadoop-env.sh
 COPY hadoop/core-site.xml /root/hadoop-2.9.2/etc/hadoop/core-site.xml
@@ -25,7 +26,8 @@ RUN /root/hadoop-2.9.2/bin/hdfs namenode -format
 
 
 # Setup Hive
-RUN curl -s http://apache.mirrors.ionfish.org/hive/hive-2.3.6/apache-hive-2.3.6-bin.tar.gz | tar -xz -C /root
+#RUN curl  http://apache.mirrors.ionfish.org/hive/hive-2.3.6/apache-hive-2.3.6-bin.tar.gz | tar -xz -C /root
+RUN curl https://archive.apache.org/dist/hive/hive-2.3.6/apache-hive-2.3.6-bin.tar.gz | tar -xz -C /root
 COPY hive/hive-site.xml /root/apache-hive-2.3.6-bin/conf/hive-site.xml
 RUN curl -s https://jdbc.postgresql.org/download/postgresql-42.2.6.jar -o /root/apache-hive-2.3.6-bin/lib/postgresql-42.2.6.jar
 
@@ -47,6 +49,13 @@ COPY presto/config.properties.template $PRESTO_HOME/etc/config.properties.templa
 COPY presto/log.properties $PRESTO_HOME/etc/log.properties
 COPY presto/node.properties $PRESTO_HOME/etc/node.properties
 
+# setup hive path
+ENV HIVE_HOME /root/apache-hive-2.3.6-bin
+ENV PATH $HIVE_HOME/bin:$PATH
+
+# setup hdfs(hadoop) path
+ENV HADOOP_HOME /root/hadoop-2.9.2
+ENV PATH $HADOOP_HOME/bin:$PATH
 
 # Copy setup script
 COPY start_services.sh /root/start_services.sh
